@@ -6,13 +6,14 @@
 #include <ctime>
 using namespace std;
 
-class Menny {
+class Menny {     //Menny is a class that store the current board, score, and level info
 private:
     vector<vector<int>> board;
     int score;
     string level;
 
-    bool move_tile(int& current, int& next) {
+    //move a single block by exchanging values
+    bool move_single(int& current, int& next) {
         if (next == 0) {
             next = current;
             current = 0;
@@ -46,6 +47,8 @@ public:
             cout << endl << endl;
         }
         cout << "Score: " << score << endl;
+        cout<<"Level: "<<level<<endl;
+        cout<< "Status: "<< check()<<endl;
     }
 
     void update(string direction) {
@@ -56,7 +59,7 @@ public:
                 for(int i = 1; i < 4; ++i) {
                     if(board[i][j] == 0) continue;
                     int k = i;
-                    while(k > 0 && move_tile(board[k][j], board[k-1][j])) {
+                    while(k > 0 && move_single(board[k][j], board[k-1][j])) {
                         moved = true;
                         k--;
                     }
@@ -67,7 +70,7 @@ public:
                 for(int i = 2; i >= 0; --i) {
                     if(board[i][j] == 0) continue;
                     int k = i;
-                    while(k < 3 && move_tile(board[k][j], board[k+1][j])) {
+                    while(k < 3 && move_single(board[k][j], board[k+1][j])) {
                         moved = true;
                         k++;
                     }
@@ -78,7 +81,7 @@ public:
                 for(int j = 1; j < 4; ++j) {
                     if(board[i][j] == 0) continue;
                     int k = j;
-                    while(k > 0 && move_tile(board[i][k], board[i][k-1])) {
+                    while(k > 0 && move_single(board[i][k], board[i][k-1])) {
                         moved = true;
                         k--;
                     }
@@ -89,7 +92,7 @@ public:
                 for(int j = 2; j >= 0; --j) {
                     if(board[i][j] == 0) continue;
                     int k = j;
-                    while(k < 3 && move_tile(board[i][k], board[i][k+1])) {
+                    while(k < 3 && move_single(board[i][k], board[i][k+1])) {
                         moved = true;
                         k++;
                     }
@@ -99,6 +102,7 @@ public:
     }
 
     void add_random() {
+        ///add 2 or 4 to a random empty box
         vector<pair<int, int>> empty_cells;
         for(int i = 0; i < 4; ++i) {
             for(int j = 0; j < 4; ++j) {
@@ -108,10 +112,21 @@ public:
             }
         }
         
-        if(empty_cells.empty()) return;
+        if(empty_cells.empty()) {return;}
         
+        srand(time(NULL));
         int index = rand() % empty_cells.size();
-        int value = (rand() % 10 < 8) ? 2 : 4;
+        int value;
+        if(level=="easy"){ 
+            srand(time(NULL));
+            value = (rand() % 10 < 8) ? 2 : 4;
+        }else if(level=="medium"){
+            srand(time(NULL));
+            value = (rand() % 10 < 6) ? 2 : 4;
+        }else if(level=="hard"){
+            srand(time(NULL));
+            value = (rand() % 10 < 4) ? 2 : 4;
+        }
         board[empty_cells[index].first][empty_cells[index].second] = value;
     }
 
@@ -120,7 +135,7 @@ public:
         for(int i = 0; i < 4; ++i) {
             for(int j = 0; j < 4; ++j) {
                 if(board[i][j] == 2048) {
-                    return "win";
+                    return "You've reached 2048! nb";
                 }
             }
         }
@@ -129,7 +144,7 @@ public:
         for(int i = 0; i < 4; ++i) {
             for(int j = 0; j < 4; ++j) {
                 if(board[i][j] == 0) {
-                    return "continue";
+                    return "playing";
                 }
             }
         }
@@ -139,11 +154,11 @@ public:
             for(int j = 0; j < 4; ++j) {
                 // Check right
                 if(j < 3 && board[i][j] == board[i][j+1]) {
-                    return "continue";
+                    return "wrong move";
                 }
                 // Check down
                 if(i < 3 && board[i][j] == board[i+1][j]) {
-                    return "continue";
+                    return "wrong move";
                 }
             }
         }
@@ -163,7 +178,8 @@ public:
 int main() {
     string direction;
     Menny game;
-    game.reset();  // Reset the game to ensure clean state
+    game.reset();
+    game.set_level("hard");
     game.add_random();
     game.add_random();
     game.print();
