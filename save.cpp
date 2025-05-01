@@ -1,6 +1,6 @@
 #include<iostream>
 #include<fstream>
-#include<vestor>
+#include<vector>
 #include<string>
 using namespace std;
 void save_game_status(vector<vector<int>>& board, int score, string& level, string& filename){
