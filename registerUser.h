@@ -2,6 +2,7 @@
 #define REGISTERUSER_H
 
 #include <vector>
+#include <string>
 
 struct account {
     int id;

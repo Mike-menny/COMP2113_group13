@@ -16,6 +16,6 @@ void registerUser(vector<account>& users) {
   cout << "Enter your name:\n";
   string name;
   getline(cin, name);
-  account Acc = {users.size(), name, 0};
+  account Acc = {static_cast<int>(users.size()), name, 0};
   users.push_back(Acc);
 }

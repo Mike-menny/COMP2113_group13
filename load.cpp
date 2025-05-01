@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+using namespace std;
 
 /**
  *The load_game_status function loads a saved game state from a specified file.
