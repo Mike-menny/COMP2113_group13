@@ -1,5 +1,5 @@
-#ifndef registerUser_H
-#define registerUser_H
+#ifndef REGISTERUSER_H
+#define REGISTERUSER_H
 #include <iostream>
 #include <vector>
 
