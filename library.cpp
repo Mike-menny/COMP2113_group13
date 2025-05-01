@@ -437,13 +437,13 @@ public:
 };
 
 //6*6 Version
-class BigMennyPro {    //BigMenny Pro is a class that stores the current score and level information 
+class BigMennyPro {    //BigMenny Pro is a class that stores the current board state, score, and level information 
 private:
     vector<vector<int>> board;
     int score;
     string level;
 
-    bool move_single(int& current, int& next) {   // move a single number and change values
+    bool move_single(int& current, int& next) {   
         if (next == 0) {
             next = current;
             current = 0;
@@ -456,13 +456,16 @@ private:
         }
         return false;
     }
+// move a single number in the board and change values
+// Inputs: current (reference to the current cell), next (reference to the target cell)
+// Outputs: true if a move or merge occurred; false otherwise
 
 public:
-    BigMennyPro() {
+    BigMennyPro() {  //initializes a new game board
         reset();
     }
 
-    void reset() {
+    void reset() {  // resets the game to its initial state
         board = vector<vector<int>>(6, vector<int>(6, 0));  // change the board to 6*6
         score = 0;
         level = "easy";
@@ -531,7 +534,7 @@ public:
         }
     }
 
-    void add_random() {  // Add a random new number (2, 4, or 8) in an empty box
+    void add_random() {  // Add a random new number (2, 4, or 8) to an empty box
         vector<pair<int, int>> empty_cells;
         for(int i = 0; i < 6; ++i) {  
             for(int j = 0; j < 6; ++j) {
@@ -568,7 +571,7 @@ public:
         board[empty_cells[index].first][empty_cells[index].second] = value;
     }
 
-    string check() {  // check the current status: win/playing/lose
+    string check() {    // check the current status: win/playing/lose
         for(int i = 0; i < 6; ++i) {  
             for(int j = 0; j < 6; ++j) {
                 if(board[i][j] == 4096) {
@@ -599,11 +602,11 @@ public:
         return "lose";
     }
 
-    void set_level(string new_level) {
+    void set_level(string new_level) {  // sets the current game difficulty level
         level = new_level;
     }
 
-    int get_score() {
+    int get_score() {  //returns the current score
         return score;
     }
 };
