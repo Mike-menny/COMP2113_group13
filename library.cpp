@@ -41,6 +41,91 @@ public:
         level = "easy";
     }
 
+ void save_game(const string& filename) {
+        ofstream outfile(filename);
+        if (!outfile) {
+            cerr << "Error saving 4x4 game!" << endl;
+            return;
+        }
+
+        outfile << level << endl;
+        outfile << score << endl;
+        
+        for (const auto& row : board) {
+            for (int val : row) {
+                outfile << val << " ";
+            }
+            outfile << endl;
+        }
+        
+        cout << "4x4 Game saved to " << filename << endl;
+    }
+
+    bool load_game(const string& filename) {
+        ifstream infile(filename);
+        if (!infile) {
+            cerr << "Error loading 4x4 game!" << endl;
+            return false;
+        }
+
+        string line;
+        getline(infile, line);
+        level = line;
+        
+        getline(infile, line);
+        score = stoi(line);
+        
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                infile >> board[i][j];
+            }
+        }
+        
+        cout << "4x4 Game loaded from " << filename << endl;
+        return true;
+    }
+
+    void save_highscore() {
+        map<string, int> highscores;
+        
+        ifstream infile("highscores_4x4.txt"); 
+        if (infile) {
+            string lvl;
+            int scr;
+            while (infile >> lvl >> scr) {
+                highscores[lvl] = scr;
+            }
+            infile.close();
+        }
+
+        if (score > highscores[level]) {
+            highscores[level] = score;
+
+            ofstream outfile("highscores_4x4.txt");
+            for (const auto& entry : highscores) {
+                outfile << entry.first << " " << entry.second << endl;
+            }
+            cout << "New 4x4 highscore for " << level << ": " << score << endl;
+        }
+    }
+
+
+    void show_highscores() {
+        ifstream infile("highscores_4x4.txt");
+        if (!infile) {
+            cout << "No 4x4 highscores yet." << endl;
+            return;
+        }
+
+        cout << "\n===== 4x4 HIGHSCORES =====" << endl;
+        string lvl;
+        int scr;
+        while (infile >> lvl >> scr) {
+            cout << lvl << ": " << scr << endl;
+        }
+        cout << "=========================" << endl;
+    }
+
     void print() {
         cout << "\n";
         for(int i = 0; i < 4; ++i) {
@@ -471,6 +556,92 @@ public:
         level = "easy";
     }
 
+void save_game(const string& filename) {
+        ofstream outfile(filename);
+        if (!outfile) {
+            cerr << "Error saving 6x6 game!" << endl;
+            return;
+        }
+
+        outfile << level << endl;
+        outfile << score << endl;
+        
+        for (const auto& row : board) {
+            for (int val : row) {
+                outfile << val << " ";
+            }
+            outfile << endl;
+        }
+        
+        cout << "6x6 Game saved to " << filename << endl;
+    }
+
+
+    bool load_game(const string& filename) {
+        ifstream infile(filename);
+        if (!infile) {
+            cerr << "Error loading 6x6 game!" << endl;
+            return false;
+        }
+
+        string line;
+        getline(infile, line);
+        level = line;
+        
+        getline(infile, line);
+        score = stoi(line);
+        
+        for (int i = 0; i < 6; ++i) {
+            for (int j = 0; j < 6; ++j) {
+                infile >> board[i][j];
+            }
+        }
+        
+        cout << "6x6 Game loaded from " << filename << endl;
+        return true;
+    }
+
+
+    void save_highscore() {
+        map<string, int> highscores;
+        
+        ifstream infile("highscores_6x6.txt"); // 使用专用文件名
+        if (infile) {
+            string lvl;
+            int scr;
+            while (infile >> lvl >> scr) {
+                highscores[lvl] = scr;
+            }
+            infile.close();
+        }
+
+        if (score > highscores[level]) {
+            highscores[level] = score;
+
+            ofstream outfile("highscores_6x6.txt");
+            for (const auto& entry : highscores) {
+                outfile << entry.first << " " << entry.second << endl;
+            }
+            cout << "New 6x6 highscore for " << level << ": " << score << endl;
+        }
+    }
+
+    void show_highscores() {
+        ifstream infile("highscores_6x6.txt");
+        if (!infile) {
+            cout << "No 6x6 highscores yet." << endl;
+            return;
+        }
+
+        cout << "\n===== 6x6 HIGHSCORES =====" << endl;
+        string lvl;
+        int scr;
+        while (infile >> lvl >> scr) {
+            cout << lvl << ": " << scr << endl;
+        }
+        cout << "=========================" << endl;
+    }
+
     void print() {    // print the 6*6 board, current score, level and stauts
         cout << "\n";
         for(int i = 0; i < 6; ++i) {  
@@ -613,30 +784,216 @@ public:
 
 
 int main() {
-    string direction;
-    Menny game;
-    game.reset();
-    game.set_level("hard");
-    game.add_random();
-    game.add_random();
-    game.print();
+    vector<account> users;
+    account* currentUser = nullptr;
     
-    while(true) {
-        cin >> direction;
-        if(direction == "q") break;
-        game.update(direction);
-        game.print();
-        game.add_random();
-        game.print();
-        
-        string status = game.check();
-        if(status == "win") {
-            cout << "Congratulations! You won!" << endl;
-            break;
-        } else if(status == "lose") {
-            cout << "Game Over!" << endl;
-            break;
+    // 用户登录/注册系统
+    while(!currentUser) {
+        cout << "1. Register\n2. Login\n3. Exit\nChoose: ";
+        int choice;
+        cin >> choice;
+        cin.ignore(); 
+
+        if(choice == 1) {
+            // 注册新用户
+            account newUser;
+            cout << "Enter username: ";
+            getline(cin, newUser.name);
+            newUser.id = users.size();
+            newUser.highestScore = 0;
+            users.push_back(newUser);
+            currentUser = &users.back();
+            cout << "Registered successfully!\n";
+        } 
+        else if(choice == 2) {
+            // 用户登录
+            if(users.empty()) {
+                cout << "No users registered yet!\n";
+                continue;
+            }
+            
+            cout << "Enter username: ";
+            string username;
+            getline(cin, username);
+            
+            for(auto& user : users) {
+                if(user.name == username) {
+                    currentUser = &user;
+                    cout << "Logged in as " << username << "\n";
+                    break;
+                }
+            }
+            
+            if(!currentUser) {
+                cout << "User not found!\n";
+            }
+        }
+        else if(choice == 3) {
+            return 0;
         }
     }
+
+    // 游戏选择菜单
+    int gameChoice;
+    cout << "\nSelect Game Version:\n"
+         << "1. 4x4 (Classic)\n"
+         << "2. 5x5 (Plus)\n"
+         << "3. 6x6 (Pro)\n"
+         << "Choice: ";
+    cin >> gameChoice;
+
+    // 难度选择
+    string level;
+    cout << "\nSelect Difficulty:\n"
+         << "1. Easy\n"
+         << "2. Medium\n"
+         << "3. Hard\n"
+         << "Choice: ";
+    int levelChoice;
+    cin >> levelChoice;
+    
+    switch(levelChoice) {
+        case 1: level = "easy"; break;
+        case 2: level = "medium"; break;
+        case 3: level = "hard"; break;
+        default: level = "easy";
+    }
+
+    // 初始化选择游戏
+    Menny* game4x4 = nullptr;
+    BigMennyPlus* game5x5 = nullptr;
+    BigMennyPro* game6x6 = nullptr;
+    
+    string direction;
+    bool gameRunning = true;
+    
+    switch(gameChoice) {
+        case 1: 
+            game4x4 = new Menny();
+            game4x4->reset();
+            game4x4->set_level(level);
+            game4x4->add_random();
+            game4x4->add_random();
+            game4x4->print();
+            
+            while(gameRunning) {
+                cin >> direction;
+                if(direction == "q") break;
+                
+                game4x4->update(direction);
+                game4x4->print();
+                game4x4->add_random();
+                game4x4->print();
+                
+                string status = game4x4->check();
+                if(status.find("won") != string::npos) {
+                    cout << "Congratulations! You won!\n";
+                    if(game4x4->get_score() > currentUser->highestScore) {
+                        currentUser->highestScore = game4x4->get_score();
+                        cout << "New personal best: " << currentUser->highestScore << endl;
+                    }
+                    break;
+                } else if(status == "lose") {
+                    cout << "Game Over!\n";
+                    break;
+                }
+            }
+            
+            // 存档提示
+            cout << "Save game before quitting? (y/n): ";
+            char saveChoice;
+            cin >> saveChoice;
+            if(saveChoice == 'y') {
+                string filename = currentUser->name + "_4x4_save.txt";
+                cout << "Save function needs to be implemented for 4x4\n";
+            }
+            delete game4x4;
+            break;
+            
+        case 2: 
+            game5x5 = new BigMennyPlus();
+            game5x5->reset();
+            game5x5->set_level(level);
+            game5x5->add_random();
+            game5x5->add_random();
+            game5x5->print();
+            
+            while(gameRunning) {
+                cin >> direction;
+                if(direction == "q") break;
+                
+                game5x5->update(direction);
+                game5x5->print();
+                game5x5->add_random();
+                game5x5->print();
+                
+                string status = game5x5->check();
+                if(status.find("won") != string::npos) {
+                    cout << "Congratulations! You won!\n";
+                    if(game5x5->get_score() > currentUser->highestScore) {
+                        currentUser->highestScore = game5x5->get_score();
+                        cout << "New personal best: " << currentUser->highestScore << endl;
+                    }
+                    game5x5->save_highscore();
+                    break;
+                } else if(status == "lose") {
+                    cout << "Game Over!\n";
+                    break;
+                }
+            }
+            
+            cout << "Save game before quitting? (y/n): ";
+            cin >> saveChoice;
+            if(saveChoice == 'y') {
+                string filename = currentUser->name + "_5x5_save.txt";
+                game5x5->save_game(filename);
+            }
+            delete game5x5;
+            break;
+            
+        case 3: 
+            game6x6 = new BigMennyPro();
+            game6x6->reset();
+            game6x6->set_level(level);
+            game6x6->add_random();
+            game6x6->add_random();
+            game6x6->print();
+            
+            while(gameRunning) {
+                cin >> direction;
+                if(direction == "q") break;
+                
+                game6x6->update(direction);
+                game6x6->print();
+                game6x6->add_random();
+                game6x6->print();
+                
+                string status = game6x6->check();
+                if(status.find("won") != string::npos) {
+                    cout << "Congratulations! You won!\n";
+                    if(game6x6->get_score() > currentUser->highestScore) {
+                        currentUser->highestScore = game6x6->get_score();
+                        cout << "New personal best: " << currentUser->highestScore << endl;
+                    }
+                    break;
+                } else if(status == "lose") {
+                    cout << "Game Over!\n";
+                    break;
+                }
+            }
+            
+            cout << "Save game before quitting? (y/n): ";
+            cin >> saveChoice;
+            if(saveChoice == 'y') {
+                string filename = currentUser->name + "_6x6_save.txt";
+                cout << "Save function needs to be implemented for 6x6\n";
+            }
+            delete game6x6;
+            break;
+            
+        default:
+            cout << "Invalid choice!\n";
+    }
+
     return 0;
 }
