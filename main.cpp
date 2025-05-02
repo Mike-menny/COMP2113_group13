@@ -13,6 +13,13 @@
 #include "library.h"
 using namespace std;
 
+/**
+ * Clears the console screen in a cross-platform manner.
+ * For Windows: Uses WinAPI console functions
+ * For other platforms: Uses ANSI escape codes
+ * Input: None
+ * Output: None (clears the screen)
+ */
 void clearScreen() {
     #if defined(_WIN32)
         HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -27,23 +34,31 @@ void clearScreen() {
     #endif
 }
 
+/**
+ * Main function that drives the 2048 game application.
+ * Handles user registration/login, game selection, difficulty selection,
+ * and manages the game loop for different game versions.
+ * Input: None (command line execution)
+ * Output: Returns 0 on successful program completion
+ */
 int main() {
-    vector<account> users;
-    account* currentUser = nullptr;
+    vector<account> users;               // Stores all registered user accounts
+    account* currentUser = nullptr;      // Pointer to currently logged in user
     
-    // 用户登录/注册系统
+    // User login/registration system
     while(!currentUser) {
         cout << "1. Register\n2. Login\n3. Exit\nChoose: ";
         string choice;
         getline(cin, choice);
         
+        // Validate user input
         while(choice != "1" && choice != "2" && choice != "3"){
             cout << "Invalid choice! Please enter again (1-3): ";
             getline(cin, choice);
         }
         
         if(choice == "1") {
-            // 注册新用户
+            // Register new user
             account newUser;
             cout << "Enter username: ";
             getline(cin, newUser.name);
@@ -54,7 +69,7 @@ int main() {
             cout << "Registered successfully!\n";
         } 
         else if(choice == "2") {
-            // 用户登录
+            // User login
             if(users.empty()) {
                 cout << "No users registered yet!\n";
                 continue;
@@ -64,6 +79,7 @@ int main() {
             string username;
             getline(cin, username);
             
+            // Search for user in registered users
             for(auto& user : users) {
                 if(user.name == username) {
                     currentUser = &user;
@@ -77,11 +93,11 @@ int main() {
             }
         }
         else if(choice == "3") {
-            return 0;
+            return 0;  // Exit program
         }
     }
 
-    // 游戏选择菜单
+    // Game selection menu
     string gameChoice;
     cout << "\nSelect Game Version:\n"
          << "1. 4x4 (Classic)\n"
@@ -90,12 +106,13 @@ int main() {
          << "Choice: ";
     getline(cin, gameChoice);
     
+    // Validate game choice input
     while(gameChoice != "1" && gameChoice != "2" && gameChoice != "3"){
         cout << "Invalid choice! Please enter again (1-3): ";
         getline(cin, gameChoice);
     }
 
-    // 难度选择
+    // Difficulty selection
     string level;
     cout << "\nSelect Difficulty:\n"
          << "1. Easy\n"
@@ -105,24 +122,27 @@ int main() {
     string levelChoice;
     getline(cin, levelChoice);
     
+    // Validate difficulty choice input
     while(levelChoice != "1" && levelChoice != "2" && levelChoice != "3"){
         cout << "Invalid choice! Please enter again (1-3): ";
         getline(cin, levelChoice);
     }
     
+    // Set difficulty level based on choice
     if(levelChoice == "1") level = "easy";
     else if(levelChoice == "2") level = "medium";
     else level = "hard";
 
-    // 初始化选择游戏
-    Menny* game4x4 = nullptr;
-    BigMennyPlus* game5x5 = nullptr;
-    BigMennyPro* game6x6 = nullptr;
+    // Initialize game based on user selection
+    Menny* game4x4 = nullptr;        // Pointer to 4x4 game instance
+    BigMennyPlus* game5x5 = nullptr; // Pointer to 5x5 game instance
+    BigMennyPro* game6x6 = nullptr;  // Pointer to 6x6 game instance
     
-    string direction;
+    string direction;                // Stores user movement input (wasd)
     cout << "plz input wasd:";
-    bool gameRunning = true;
+    bool gameRunning = true;         // Flag to control game loop
     
+    // 4x4 Game Version
     if(gameChoice == "1") {
         game4x4 = new Menny();
         game4x4->reset();
@@ -131,20 +151,25 @@ int main() {
         game4x4->add_random();
         game4x4->print();
         
+        // Main game loop
         while(gameRunning) {
             getline(cin, direction);
-            if(direction == "q") break;
+            if(direction == "q") break;  // Quit game
+            
+            // Validate movement input
             while(direction!="a" && direction!="w" && direction!="s" && direction!="d" && direction!="q"){
                 cout<<"invalid direction. plz input wasd (or q to quit):";
                 getline(cin, direction);
             }
             
+            // Update game state
             game4x4->update(direction);
             clearScreen();
             game4x4->print();
             game4x4->add_random();
             game4x4->print();
             
+            // Check game status
             string status = game4x4->check();
             if(status.find("reached") != string::npos) {
                 cout << "Congratulations! You won!\n";
@@ -163,7 +188,7 @@ int main() {
             }
         }
         
-        // 存档提示
+        // Save game prompt
         cout << "Save game before quitting? (y/n): ";
         string saveChoice;
         getline(cin, saveChoice);
@@ -173,6 +198,7 @@ int main() {
         }
         delete game4x4;
     }
+    // 5x5 Game Version
     else if(gameChoice == "2") {
         game5x5 = new BigMennyPlus();
         game5x5->reset();
@@ -223,6 +249,7 @@ int main() {
         }
         delete game5x5;
     }
+    // 6x6 Game Version
     else if(gameChoice == "3") {
         game6x6 = new BigMennyPro();
         game6x6->reset();
