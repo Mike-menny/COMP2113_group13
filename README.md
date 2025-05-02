@@ -108,11 +108,7 @@ username_6x6_save.txt
 
 This project is licensed under the MIT License - see the LICENSE file for details. 
 
-Here's a structured list of features implemented in the code:
-
----
-
-### List of Features
+## List of Features
 1. **Grid-Based Game Board**
    - 4x4 (Menny), 5x5 (BigMennyPlus), and 6x6 (BigMennyPro) variants
    - Dynamic initialization with `vector<vector<int>>`
