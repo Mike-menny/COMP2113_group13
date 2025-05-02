@@ -98,11 +98,6 @@ username_6x6_save.txt
 
 - Group 13
 - COMP2113 Project
-- Miao Yuyang 3036264303
-- Ma Xinyi 3036128767
-- Ying Zichuan 3036265113
-- Ni Feiyang 3036272908
-- Lyu Qingyang 3036127074
 
 ## License
 
