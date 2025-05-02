@@ -404,64 +404,15 @@ void BigMennyPlus::save_highscore() {
  * Reads from "highscores.txt" and formats the output
  * Shows "No highscores" message if file doesn't exist
  */
-void BigMennyPlus::show_highscores() {
-    ifstream infile("highscores.txt");
-    if (!infile) {
-        cout << "No highscores recorded yet." << endl;
-        return;
-    }
 
-    cout << "\n===== HIGHSCORES =====" << endl;
-    string lvl;
-    int scr;
-    while (infile >> lvl >> scr) {
-        cout << lvl << ": " << scr << endl;
-    }
-    cout << "=====================" << endl;
-}
-
-/**
- * @brief Prints the current game state to console
- * 
- * Displays:
- * 1. 5x5 game board with colored tiles (0 shown as .)
- * 2. Current score
- * 3. Current difficulty level
- * 4. Game status from check()
- * 
- * Color scheme:
- * 2/4: Red | 8/16: Yellow | 32/64: Green
- * 128/256: Cyan | 512/1024: Blue | 2048/4096: Magenta
- */
-void BigMennyPlus::print() {
-    cout << "\n";
-    for(int i = 0; i < 5; ++i) {
-        for(int j = 0; j < 5; ++j) {
-            if(board[i][j] == 0) {
-                cout << setw(6) << ".";
-            } else if(board[i][j] == 2 || board[i][j] == 4) {
-                cout << "\033[31m" << setw(6) << board[i][j] << "\033[0m";
-            } else if(board[i][j] == 8 || board[i][j] == 16) {
-                cout << "\033[33m" <<setw(6) << board[i][j] << "\033[0m";
-            } else if(board[i][j] == 32 || board[i][j] == 64) {
-                cout <<  "\033[32m" << setw(6) <<board[i][j] << "\033[0m";
-            } else if(board[i][j] == 128 || board[i][j] == 256) {
-                cout <<  "\033[36m" << setw(6) <<board[i][j] << "\033[0m";
-            } else if(board[i][j] == 512 || board[i][j] == 1024) {
-                cout <<  "\033[34m" <<setw(6) << board[i][j] << "\033[0m";
-            } else if(board[i][j] == 2048 || board[i][j] == 4096) {
-                cout <<  "\033[35m" <<setw(6) << board[i][j] << "\033[0m";
-            }
-        }
-        cout << endl << endl;
-    }
-    cout << "Score: " << score << endl;
-    cout << "Level: " << level << endl;
-    cout << "Status: " << check() << endl;
-}
-
+// Applies a move to the board in the specified direction ("w", "a", "s", "d").
+// Inputs:
+// - direction: a string representing the movement direction
+//              "w" = up, "s" = down, "a" = left, "d" = right
+// Outputs:
+// - Modifies the board by shifting and merging tiles based on game rules.
 void BigMennyPlus::update(string direction) {
-    if(direction == "w") {  
+    if(direction == "w") {
         for(int j = 0; j < 5; ++j) {
             for(int i = 1; i < 5; ++i) {
                 if(board[i][j] == 0) continue;
@@ -471,7 +422,7 @@ void BigMennyPlus::update(string direction) {
                 }
             }
         }
-    } else if(direction == "s") {  
+    } else if(direction == "s") {
         for(int j = 0; j < 5; ++j) {
             for(int i = 3; i >= 0; --i) {
                 if(board[i][j] == 0) continue;
@@ -481,7 +432,7 @@ void BigMennyPlus::update(string direction) {
                 }
             }
         }
-    } else if(direction == "a") {  
+    } else if(direction == "a") {
         for(int i = 0; i < 5; ++i) {
             for(int j = 1; j < 5; ++j) {
                 if(board[i][j] == 0) continue;
@@ -491,7 +442,7 @@ void BigMennyPlus::update(string direction) {
                 }
             }
         }
-    } else if(direction == "d") {  
+    } else if(direction == "d") {
         for(int i = 0; i < 5; ++i) {
             for(int j = 3; j >= 0; --j) {
                 if(board[i][j] == 0) continue;
@@ -504,6 +455,11 @@ void BigMennyPlus::update(string direction) {
     }
 }
 
+// Adds a new random tile (2, 4, or 8) to an empty cell on the board.
+// Inputs:
+// - None (uses current board and level state)
+// Outputs:
+// - Updates the board by inserting a new value at a random empty position
 void BigMennyPlus::add_random() {
     vector<pair<int, int>> empty_cells;
     for(int i = 0; i < 5; ++i) {
@@ -515,13 +471,13 @@ void BigMennyPlus::add_random() {
     }
     
     if(empty_cells.empty()) { return; }
-    
+
     srand(time(NULL));
     int index = rand() % empty_cells.size();
-    
+
     int value;
     int random_num = rand() % 10;
-    
+
     if(level == "easy") {
         if(random_num < 8) value = 2;
         else if(random_num < 9) value = 4;
@@ -537,10 +493,18 @@ void BigMennyPlus::add_random() {
         else if(random_num < 7) value = 4;
         else value = 8;
     }
-    
+
     board[empty_cells[index].first][empty_cells[index].second] = value;
 }
 
+// Checks the current game status: win, ongoing, or lose.
+// Inputs:
+// - None (uses current board state)
+// Outputs:
+// - Returns a string indicating game status:
+//     "You've reached 4096!" if win,
+//     "playing" if moves are still possible,
+//     "lose" if no moves remain.
 string BigMennyPlus::check() {
     for(int i = 0; i < 5; ++i) {
         for(int j = 0; j < 5; ++j) {
@@ -572,15 +536,26 @@ string BigMennyPlus::check() {
     return "lose";
 }
 
+// Sets the difficulty level of the game.
+// Inputs:
+// - new_level: string representing the difficulty ("easy", "medium", "hard")
+// Outputs:
+// - Updates the internal level state
 void BigMennyPlus::set_level(string new_level) {
     level = new_level;
 }
 
+// Returns the current game score.
+// Inputs: None
+// Outputs: Integer value of the current score.
 int BigMennyPlus::get_score() {
     return score;
 }
 
 // BigMennyPro class implementation
+// Moves a single tile in the board.
+// Inputs: 'current' and 'next' are references to adjacent cells in the direction of movement.
+// Outputs: Returns true if a move or merge occurred, and updates 'score' if tiles merged
 bool BigMennyPro::move_single(int& current, int& next) {   
     if (next == 0) {
         next = current;
@@ -595,16 +570,24 @@ bool BigMennyPro::move_single(int& current, int& next) {
     return false;
 }
 
+// Constructor for BigMennyPro class.
+// Initializes the game state by calling the reset function.
 BigMennyPro::BigMennyPro() {    
     reset();
 }
 
+// Resets the board to an empty 6x6 grid and sets the initial score and difficulty level.
+// Inputs: None.
+// Outputs: Modifies internal state.
 void BigMennyPro::reset() {
     board = vector<vector<int>>(6, vector<int>(6, 0));
     score = 0;
     level = "easy";
 }
 
+// Saves the current game state to a file.
+// Inputs: 'filename' - the name of the file to save the game state to.
+// Outputs: Writes level, score, and board values to file.
 void BigMennyPro::save_game(const string& filename) {
     ofstream outfile(filename);
     if (!outfile) {
@@ -625,6 +608,9 @@ void BigMennyPro::save_game(const string& filename) {
     cout << "6x6 Game saved to " << filename << endl;
 }
 
+// Loads a previously saved game state from a file.
+// Inputs: 'filename' - the name of the file to load the game state from.
+// Outputs: Updates board, score, and level; returns true if successful, false
 bool BigMennyPro::load_game(const string& filename) {
     ifstream infile(filename);
     if (!infile) {
@@ -649,6 +635,9 @@ bool BigMennyPro::load_game(const string& filename) {
     return true;
 }
 
+// Saves the current score as a high score if it exceeds the existing value for the level.
+// Inputs: None.
+// Outputs: Updates the highscore file if necessary
 void BigMennyPro::save_highscore() {
     map<string, int> highscores;
     
@@ -673,6 +662,9 @@ void BigMennyPro::save_highscore() {
     }
 }
 
+// Displays the high scores for all levels.
+// Inputs: None.
+// Outputs: Prints high scores to the console.
 void BigMennyPro::show_highscores() {
     ifstream infile("highscores_6x6.txt");
     if (!infile) {
@@ -689,6 +681,9 @@ void BigMennyPro::show_highscores() {
     cout << "=========================" << endl;
 }
 
+// Prints the current board state to the console with colored tiles and score information.
+// Inputs: None.
+// Outputs: Console output of the board, score, level, and current status.
 void BigMennyPro::print() {
     cout << "\n";
     for(int i = 0; i < 6; ++i) {
@@ -716,6 +711,9 @@ void BigMennyPro::print() {
     cout << "Status: " << check() << endl;
 }
 
+// Applies a move based on the user's direction input ("w", "a", "s", or "d").
+// Inputs: 'direction' string representing the movement direction.
+// Outputs: Modifies the board state through tile shifting and merging.
 void BigMennyPro::update(string direction) {
     if(direction == "w") {  
         for(int j = 0; j < 6; ++j) {  
@@ -760,6 +758,9 @@ void BigMennyPro::update(string direction) {
     }
 }
 
+// Adds a random tile (2, 4, or 8) to an empty cell on the board, based on the difficulty level.
+// Inputs: None.
+// Outputs: Updates the board by inserting a new tile.
 void BigMennyPro::add_random() {
     vector<pair<int, int>> empty_cells;
     for(int i = 0; i < 6; ++i) {  
@@ -797,6 +798,9 @@ void BigMennyPro::add_random() {
     board[empty_cells[index].first][empty_cells[index].second] = value;
 }
 
+// Evaluates and returns the current game status.
+// Inputs: None.
+// Outputs: Returns a string - "playing", "lose", or "You've reached 4096!".
 string BigMennyPro::check() {
     for(int i = 0; i < 6; ++i) {  
         for(int j = 0; j < 6; ++j) {
@@ -828,12 +832,16 @@ string BigMennyPro::check() {
     return "lose";
 }
 
+// Sets the difficulty level of the game.
+// Inputs: 'new_level' - a string representing the difficulty ("easy", "medium", "hard").
+// Outputs: Modifies the internal level setting.
 void BigMennyPro::set_level(string new_level) {
     level = new_level;
 }
 
+// Returns the current score of the player.
+// Inputs: None.
+// Outputs: Integer score value.
 int BigMennyPro::get_score() {
     return score;
 }
-
-
