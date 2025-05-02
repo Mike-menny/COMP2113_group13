@@ -107,3 +107,83 @@ username_6x6_save.txt
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details. 
+
+Here's a structured list of features implemented in the code:
+
+---
+
+### List of Features
+1. **Grid-Based Game Board**
+   - 4x4 (Menny), 5x5 (BigMennyPlus), and 6x6 (BigMennyPro) variants
+   - Dynamic initialization with `vector<vector<int>>`
+
+2. **Tile Movement System**
+   - Directional controls (`w/a/s/d` for up/left/down/right)
+   - Tile merging logic (doubling value on collision)
+   - Score accumulation during merges
+
+3. **Random Tile Generation**
+   - Difficulty-based probabilities:
+     - Easy: 4*4 board
+     - Medium: 5*5 board  
+     - Hard: 6*6 board
+   - Empty cell detection before placement
+
+4. **Win/Lose Conditions**
+   - Win: Reach 2048 (4x4/5x5) or 4096 (6x6)
+   - Lose: No valid moves remaining (board full + no merges possible)
+   - Intermediate states: "playing", "wrong move"
+     
+5. **Game State Saving/Loading**
+   - File format:
+     - Line 1: Difficulty level
+     - Line 2: Current score
+     - Subsequent lines: Board state (space-separated values)
+   - Error handling for file operations
+
+6. **Highscore System**
+   - Per-difficulty tracking (easy/medium/hard)
+   - File storage (`highscores_[size].txt`)
+   - Auto-update when new record achieved
+   - Display formatted highscores table
+     
+7. **Color-Coded Board Display**
+   - ANSI color schemes by tile value:
+     - 2/4: Red | 8/16: Yellow | 32/64: Green
+     - 128/256: Cyan | 512/1024: Blue | 2048+/4096: Magenta
+   - Zero tiles shown as `.` with uniform spacing
+
+8. **Real-Time Status Updates**
+   - Current score display
+   - Active difficulty level
+   - Game state ("playing"/"lose"/win message)
+
+9. **Difficulty Settings**
+   - Affects:
+     - Random tile spawn probabilities
+     - Highscore tracking (separate records per level)
+   - Configurable via `set_level()`
+
+10. **Polymorphic Design**
+    - Three game modes sharing core logic:
+      - `Menny` (4x4 classic)
+      - `BigMennyPlus` (5x5 extended)
+      - `BigMennyPro` (6x6 challenge)
+    - Consistent API across modes (`move_single()`, `add_random()`, etc.)
+
+11. **Input Validation**
+    - Directional move verification
+    - File existence checks for save/load
+    - Empty cell validation before tile generation
+      
+12. **Efficient Board Processing**
+    - Nested loops with early termination (`continue` on empty tiles)
+    - Direction-specific traversal logic (e.g., reverse iteration for down/right moves)
+
+13. **Seed Management**
+    - `srand(time(NULL))` for randomized tile spawning
+
+14. **Modular Documentation**
+    - Doxygen-style comments for all methods
+    - Clear separation of public/private members
+
