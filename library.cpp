@@ -11,7 +11,12 @@
 #include "library.h"
 using namespace std;
 
-// Menny class implementation
+
+/**
+ * Movement rules:
+ * 1. If next tile is empty (0), move current tile there
+ * 2. If tiles have same value, merge them (double next tile's value)
+ */
 bool Menny::move_single(int& current, int& next) {
     if (next == 0) {
         next = current;
@@ -26,16 +31,35 @@ bool Menny::move_single(int& current, int& next) {
     return false;
 }
 
+/**
+ * @brief Constructor - Initializes game state
+ */
 Menny::Menny() {
     reset();
 }
 
+/**
+ * @brief Resets the game to initial state
+ * 
+ * Creates 4x4 game board (all zeros)
+ * Resets score to 0
+ * Sets default difficulty to "easy"
+ */
 void Menny::reset() {
     board = vector<vector<int>>(4, vector<int>(4, 0));
     score = 0;
     level = "easy";
 }
 
+/**
+ * @brief Saves current game state to file
+ * @param filename Name of file to save to
+ * 
+ * File format:
+ * Line 1: Current difficulty level
+ * Line 2: Current score
+ * Next 4 lines: Board state (space-separated values)
+ */
 void Menny::save_game(const string& filename) {
     ofstream outfile(filename);
     if (!outfile) {
@@ -56,6 +80,11 @@ void Menny::save_game(const string& filename) {
     cout << "4x4 Game saved to " << filename << endl;
 }
 
+/**
+ * @brief Loads game state from file
+ * @param filename Name of file to load from
+ * @return bool True if load successful, false otherwise
+ */
 bool Menny::load_game(const string& filename) {
     ifstream infile(filename);
     if (!infile) {
@@ -80,6 +109,13 @@ bool Menny::load_game(const string& filename) {
     return true;
 }
 
+/**
+ * @brief Saves high score to file
+ * 
+ * Reads existing highscores from highscores_4x4.txt
+ * Updates record if current score is higher
+ * File format: Each line "level score"
+ */
 void Menny::save_highscore() {
     map<string, int> highscores;
     
@@ -104,6 +140,12 @@ void Menny::save_highscore() {
     }
 }
 
+/**
+ * @brief Displays all high scores
+ * 
+ * Reads from highscores_4x4.txt and formats output
+ * Shows "No highscores" message if file doesn't exist
+ */
 void Menny::show_highscores() {
     ifstream infile("highscores_4x4.txt");
     if (!infile) {
@@ -120,6 +162,19 @@ void Menny::show_highscores() {
     cout << "=========================" << endl;
 }
 
+/**
+ * @brief Prints current game state
+ * 
+ * Output includes:
+ * 1. Color-formatted 4x4 game board (0 shown as .)
+ * 2. Current score
+ * 3. Current difficulty level
+ * 4. Game status from check()
+ * 
+ * Color scheme:
+ * 2/4: Red | 8/16: Yellow | 32/64: Green
+ * 128/256: Cyan | 512/1024: Blue | 2048/4096: Magenta
+ */
 void Menny::print() {
     cout << "\n";
     for(int i = 0; i < 4; ++i) {
@@ -147,6 +202,15 @@ void Menny::print() {
     cout<< "Status: "<< check()<<endl;
 }
 
+/**
+ * @brief Processes player movement
+ * @param direction Movement direction (w/a/s/d for up/left/down/right)
+ * 
+ * Movement logic:
+ * 1. Iterates through all tiles
+ * 2. For each non-zero tile, attempts movement in specified direction
+ * 3. Uses move_single() for actual movement/merging
+ */
 void Menny::update(string direction) {
     if(direction == "w") {
         for(int j = 0; j < 4; ++j) {
@@ -191,6 +255,15 @@ void Menny::update(string direction) {
     }
 }
 
+/**
+ * @brief Adds random tile to empty position
+ * 
+ * Tile generation probabilities by difficulty:
+ * - easy: 80% chance of 2
+ * - medium: 60% chance of 2
+ * - hard: 40% chance of 2
+ * Does nothing if no empty positions available
+ */
 void Menny::add_random() {
     vector<pair<int, int>> empty_cells;
     for(int i = 0; i < 4; ++i) {
@@ -219,6 +292,16 @@ void Menny::add_random() {
     board[empty_cells[index].first][empty_cells[index].second] = value;
 }
 
+/**
+ * @brief Checks current game state
+ * @return string Game status message
+ * 
+ * Possible return values:
+ * - "You've reached 2048! nb" when any tile reaches 2048
+ * - "playing" when empty tiles or possible merges exist
+ * - "wrong move" when board is full but merges are possible
+ * - "lose" when game over (no moves possible)
+ */
 string Menny::check() {
     for(int i = 0; i < 4; ++i) {
         for(int j = 0; j < 4; ++j) {
@@ -250,59 +333,16 @@ string Menny::check() {
     return "lose";
 }
 
-void Menny::set_level(string new_level) {
-    level = new_level;
-}
-
-int Menny::get_score() {
-    return score;
-}
-
-// BigMennyPlus class implementation
-bool BigMennyPlus::move_single(int& current, int& next) {
-    if (next == 0) {
-        next = current;
-        current = 0;
-        return true;
-    } else if (current == next) {
-        next *= 2;
-        score += next;
-        current = 0;
-        return true;
-    }
-    return false;
-}
-
-BigMennyPlus::BigMennyPlus() {      //this is the 5*5 version
-    reset();
-}
-
-void BigMennyPlus::reset() {
-    board = vector<vector<int>>(5, vector<int>(5, 0));
-    score = 0;
-    level = "easy";
-}
-
-void BigMennyPlus::save_game(const string& filename) {
-    ofstream outfile(filename);
-    if (!outfile) {
-        cerr << "Error saving game!" << endl;
-        return;
-    }
-
-    outfile << level << endl;
-    outfile << score << endl;
-    
-    for (const auto& row : board) {
-        for (int val : row) {
-            outfile << val << " ";
-        }
-        outfile << endl;
-    }
-    
-    cout << "Game saved to " << filename << endl;
-}
-
+/**
+ * @brief Loads game state from a file
+ * @param filename The name of the file to load from
+ * @return bool True if loading succeeded, false otherwise
+ * 
+ * File format expected:
+ * Line 1: Difficulty level
+ * Line 2: Current score
+ * Next 5 lines: 5x5 game board (space-separated values)
+ */
 bool BigMennyPlus::load_game(const string& filename) {
     ifstream infile(filename);
     if (!infile) {
@@ -327,6 +367,13 @@ bool BigMennyPlus::load_game(const string& filename) {
     return true;
 }
 
+/**
+ * @brief Saves current score as high score if applicable
+ * 
+ * Reads existing highscores from "highscores.txt"
+ * Updates record if current score is higher than stored value for current level
+ * File format: Each line contains "level score"
+ */
 void BigMennyPlus::save_highscore() {
     map<string, int> highscores;
     
@@ -351,6 +398,12 @@ void BigMennyPlus::save_highscore() {
     }
 }
 
+/**
+ * @brief Displays all recorded high scores
+ * 
+ * Reads from "highscores.txt" and formats the output
+ * Shows "No highscores" message if file doesn't exist
+ */
 void BigMennyPlus::show_highscores() {
     ifstream infile("highscores.txt");
     if (!infile) {
@@ -367,6 +420,19 @@ void BigMennyPlus::show_highscores() {
     cout << "=====================" << endl;
 }
 
+/**
+ * @brief Prints the current game state to console
+ * 
+ * Displays:
+ * 1. 5x5 game board with colored tiles (0 shown as .)
+ * 2. Current score
+ * 3. Current difficulty level
+ * 4. Game status from check()
+ * 
+ * Color scheme:
+ * 2/4: Red | 8/16: Yellow | 32/64: Green
+ * 128/256: Cyan | 512/1024: Blue | 2048/4096: Magenta
+ */
 void BigMennyPlus::print() {
     cout << "\n";
     for(int i = 0; i < 5; ++i) {
