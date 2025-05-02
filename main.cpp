@@ -32,7 +32,7 @@ void clearScreen() {
 int main() {
     account user;  // Move user declaration to the top
     
-    // 用户登录/注册系统
+    // user register
     while(true) {
         cout << "1. Register\n2. Login\n3. Exit\nChoose: ";
         string choice;
@@ -44,13 +44,13 @@ int main() {
         }
         
         if(choice == "1") {
-            // 注册新用户
+            // register new user
             user = registerUser();  // Fix function call
             cout << "Registered successfully!\n";
             break;
         } 
         else if(choice == "2") {
-            // 用户登录
+            // register new user
             cout << "Enter username: ";
             string username;
             getline(cin, username);
@@ -70,7 +70,7 @@ int main() {
         }
     }
 
-    // 游戏选择菜单
+    // choose manu
     string gameChoice;
     cout << "\nSelect Game Version:\n"
          << "1. 4x4 (Classic)\n"
@@ -84,7 +84,7 @@ int main() {
         getline(cin, gameChoice);
     }
 
-    // 难度选择
+    // choose difficulty level
     string level;
     cout << "\nSelect Difficulty:\n"
          << "1. Easy\n"
@@ -103,7 +103,7 @@ int main() {
     else if(levelChoice == "2") level = "medium";
     else level = "hard";
 
-    // 初始化选择游戏
+    // choose initial level
     Menny* game4x4 = nullptr;
     BigMennyPlus* game5x5 = nullptr;
     BigMennyPro* game6x6 = nullptr;
@@ -187,7 +187,6 @@ int main() {
             }
         }
         
-        // 存档提示
         cout << "Save game before quitting? (y/n): ";
         string saveChoice;
         getline(cin, saveChoice);
