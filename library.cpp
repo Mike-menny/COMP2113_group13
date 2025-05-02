@@ -273,7 +273,7 @@ bool BigMennyPlus::move_single(int& current, int& next) {
     return false;
 }
 
-BigMennyPlus::BigMennyPlus() {
+BigMennyPlus::BigMennyPlus() {      //this is the 5*5 version
     reset();
 }
 
@@ -529,7 +529,7 @@ bool BigMennyPro::move_single(int& current, int& next) {
     return false;
 }
 
-BigMennyPro::BigMennyPro() {
+BigMennyPro::BigMennyPro() {    
     reset();
 }
 
