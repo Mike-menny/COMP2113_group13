@@ -2,7 +2,14 @@
 
 A C++ implementation of the classic 2048 game with multiple board sizes and difficulty levels.
 
-## Features
+## Features and Code Requirement:
+
+Generation of random events: 2 and 4 are generated randomly.
+Data structures for storing data: user structure and menny structure to store board information.
+Dynamic memory management: use new pointer and vector
+File input/output (e.g., for loading/saving data):save user information and board to txt.
+Program codes in multiple files: obvious.
+Multiple Difficulty Levels: we have 4x4, 5x5 and 6x6 board, with each board allowing user to select three difficulty level. 
 
 - Three game modes:
   - 4x4 (Classic)
